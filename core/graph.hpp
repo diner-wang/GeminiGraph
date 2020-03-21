@@ -22,7 +22,9 @@ Copyright (c) 2015-2016 Xiaowei Zhu, Tsinghua University
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 #include <sys/mman.h>
 #include <numa.h>
 #include <omp.h>
@@ -75,7 +77,7 @@ struct MessageBuffer {
   void resize(size_t new_capacity) {
     if (new_capacity > capacity) {
       char * new_data = (char*)numa_realloc(data, capacity, new_capacity);
-      assert(new_data!=NULL);
+      assert(new_data!=nullptr);
       data = new_data;
       capacity = new_capacity;
     }

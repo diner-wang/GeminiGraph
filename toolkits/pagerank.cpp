@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cert-err34-c"
 /*
 Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 
@@ -149,3 +151,5 @@ int main(int argc, char ** argv) {
   delete graph;
   return 0;
 }
+
+#pragma clang diagnostic pop
