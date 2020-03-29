@@ -38,13 +38,13 @@ void compute(Graph<Empty> * graph, int iterations) {
     [&](VertexId vtx){
       curr[vtx] = (double)1;
       if (graph->out_degree[vtx]>0) {
-        curr[vtx] /= graph->out_degree[vtx];
+        curr[vtx] /= graph->out_degree[vtx];  // 每个边计算得到 1 / out_degree
       }
       return (double)1;
     },
     active
   );
-  delta /= graph->vertices;
+  delta /= graph->vertices; // 计算一轮。得到变化的 vertex 占比
 
   for (int i_i=0;i_i<iterations;i_i++) {
     if (graph->partition_id==0) {
@@ -53,12 +53,12 @@ void compute(Graph<Empty> * graph, int iterations) {
     graph->fill_vertex_array(next, (double)0);
     graph->process_edges<int,double>(
       [&](VertexId src){
-        graph->emit(src, curr[src]);
+        graph->emit(src, curr[src]);  // 写入的消息为 (src, curr[src])
       },
       [&](VertexId src, double msg, VertexAdjList<Empty> outgoing_adj){
         for (AdjUnit<Empty> * ptr=outgoing_adj.begin;ptr!=outgoing_adj.end;ptr++) {
-          VertexId dst = ptr->neighbour;
-          write_add(&next[dst], msg);
+          VertexId dst = ptr->neighbour;  // 遍历出边
+          write_add(&next[dst], msg); // 将受到的消息加入 next[dst]
         }
         return 0;
       },
@@ -67,11 +67,11 @@ void compute(Graph<Empty> * graph, int iterations) {
         for (AdjUnit<Empty> * ptr=incoming_adj.begin;ptr!=incoming_adj.end;ptr++) {
           VertexId src = ptr->neighbour;
           sum += curr[src];
-        }
+        } // 先 pull 再发送
         graph->emit(dst, sum);
       },
       [&](VertexId dst, double msg) {
-        write_add(&next[dst], msg);
+        write_add(&next[dst], msg); // 将收到的消息求和
         return 0;
       },
       active
@@ -97,7 +97,7 @@ void compute(Graph<Empty> * graph, int iterations) {
         active
       );
     }
-    delta /= graph->vertices;
+    delta /= graph->vertices; // 统计迭代步之间的差异
     std::swap(curr, next);
   }
 

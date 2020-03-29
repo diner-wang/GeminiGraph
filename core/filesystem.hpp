@@ -31,7 +31,7 @@ inline bool file_exists(std::string filename) {
 
 inline long file_size(std::string filename) {
   struct stat st;
-  assert(stat(filename.c_str(), &st)==0);
+  assert(stat(filename.c_str(), &st)==0); // 获取文件状态复制到&st中
   return st.st_size;
 }
 
